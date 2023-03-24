@@ -19,24 +19,29 @@ ASCII(например, €);
 совпадают ли они с исходными.
 """
 import yaml
+from yaml import SafeLoader
 
-def write_dict_to_yaml(dict, file):
-    with open(file, 'w') as f_n:
-        yaml.dump(dict, f_n, default_flow_style=False, allow_unicode = True)
-
-    with open(file) as f_n:
-        f_n_content = yaml.load(f_n)
-
-    print(f_n_content == dict)
-
-if __name__ == "__main__":
-    my_dict = {
-        '100€': [1, 2, 3, 4],
-        '200€': 8000,
-        '300€': {
-            'first': [1,2,3,4],
-            'second': 800,
-        }
+def yaml_save_data():
+    data = {
+        'items': ['computer', 'printer', 'keyboard', 'mouse'],
+        'items_quantity': 4,
+        'items_ptice': {'computer': '200\u20ac-1000\u20ac',
+                        'keyboard': '5\u20ac-50\u20ac',
+                        'mouse': '4\u20ac-7\u20ac',
+                        'printer': '100\u20ac-300\u20ac'},
     }
+    with open('file.yaml', 'w', encoding='utf-8') as yaml_file:
+        yaml.dump(data, yaml_file, default_flow_style=False,
+                  allow_unicode=True)
 
-    write_dict_to_yaml(my_dict, 'file.yaml')
+
+def read_yaml_file():
+    try:
+        with open('file.yaml', 'r', encoding='utf-8') as read_file:
+            content = yaml.load(read_file, Loader=SafeLoader)
+            return content
+    except FileNotFoundError:
+        print('файла не существует')
+
+yaml_save_data()
+print(read_yaml_file())
